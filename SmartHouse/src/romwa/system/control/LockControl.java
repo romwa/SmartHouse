@@ -1,5 +1,8 @@
 package romwa.system.control;
 
+
+import java.util.Date;
+
 import romwa.FileIO.FileIO;
 import romwa.system.SystemVariables;
 
@@ -19,6 +22,8 @@ public class LockControl extends Control{
 			arduino.write(ArduinoHandler.LOCK);
 			logStart();
 			setState(true);
+			Date d = new Date();
+			System.out.println(d);
 			SystemVariables.changeCurrentAction(SystemVariables.AWAITING_CONFIRMATION);
 		}
 	}

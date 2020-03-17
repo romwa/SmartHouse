@@ -13,6 +13,7 @@ import romwa.system.SystemVariables;
 import romwa.system.control.ArduinoHandler;
 import romwa.system.control.LightControl;
 import romwa.system.control.LockControl;
+import romwa.system.control.Log;
 
 public class Lock {
 
@@ -27,14 +28,16 @@ private CombinedButton button;
 	
 	private int screen;
 	
+	private Log log;
+	
 	public Lock(ArduinoHandler arduino) {
 		control = new LockControl(arduino);
 		
 		lockState = control.getState();
 		
-		button = new CombinedButton(lockState);
+		button = new CombinedButton(!lockState);
 		
-		if(control.isReady()) lock();
+//		if(control.isReady()) lock();
 		
 //		lc = new LightControl();
 		
@@ -42,14 +45,21 @@ private CombinedButton button;
 		timeTable = new TimeTable("Data" + s + "timeTables" + s + "LockTimeTable.txt", "Lock Time Table");
 		
 		screen = SystemVariables.MAIN_SCREEN;
+		
+		log = new Log("Data" + s + "log" + s + "LockLog.txt");
 	}
 	
-	public void checkAction(int day, int hour) {
-		if(timeTable.timeTableHour(day, hour)) {
-			unlock();
-		} else {
-			lock();
+	public int checkAction(int day, int hour) {
+		System.out.println("checking lock tt");
+		if(timeTable.timeTableHour(day, hour) && control.getState()) {
+			System.out.println("1");
+			return 1;
+		} else if(!timeTable.timeTableHour(day, hour) && !control.getState()){
+			System.out.println("0");
+			return 0;
 		}
+		System.out.println("-1");
+		return -1;
 	}
 	
 	public void draw(PApplet drawer) {
@@ -88,6 +98,8 @@ private CombinedButton button;
 				return -1;
 			case SystemVariables.TIME_TABLE_BUTTON:
 				return SystemVariables.TIME_TABLE_BUTTON;
+			case SystemVariables.LOG_BUTTON:
+				return SystemVariables.LOG_BUTTON;
 			}
 		} else if(screen == SystemVariables.TT_LOCK_SCREEN){
 			if(timeTable.mousePress(x, y)==0) {
@@ -109,5 +121,14 @@ private CombinedButton button;
 		control.stop();
 		lockState = true;
 		button.setDeviceState(lockState);
+	}
+
+	public String logFile() {
+		return control.getLog();
+	}
+
+	public void openLog() {
+		// TODO Auto-generated method stub
+		log.openLog();
 	}
 }

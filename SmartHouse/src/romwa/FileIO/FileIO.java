@@ -51,6 +51,7 @@ public class FileIO {
 		return null;
 	}
 	
+	
 	/**
 	 * Reads the first line of a file
 	 * @param filename The file to be read
@@ -82,15 +83,15 @@ public class FileIO {
 	/**
 	 * Writes the ArrayList fillData to the file. Completely erasing everything that was written there before
 	 * @param filename The file to write to
-	 * @param fillData The data to put in the file
+	 * @param fileData The data to put in the file
 	 * @post The file will only contain the lines from the fillData ArrayList
 	 */
-	public static void writeFile(String filename, ArrayList<String> fillData) {
+	public static void writeFile(String filename, ArrayList<String> fileData) {
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(filename);
 
-			for(String line : fillData) {
+			for(String line : fileData) {
 				writer.write(line += lineSeparator);
 			}
 

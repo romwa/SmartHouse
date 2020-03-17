@@ -19,6 +19,7 @@ public class CombinedButton {
 	private OnOffButton onButton;
 	private OnOffButton offButton;
 	private TimeTableButton ttButton;
+	private LogButton logButton;
 
 	private boolean deviceState;
 	
@@ -30,7 +31,8 @@ public class CombinedButton {
 	private static final int 
 			ON_BUTTON = SystemVariables.ON_BUTTON, 
 			OFF_BUTTON = SystemVariables.OFF_BUTTON, 
-			TIME_TABLE_BUTTON = SystemVariables.TIME_TABLE_BUTTON;
+			TIME_TABLE_BUTTON = SystemVariables.TIME_TABLE_BUTTON,
+			LOG_BUTTON = SystemVariables.LOG_BUTTON;
 	
 	/**
 	 * Creates an instance of the CombinedButton at (x,y) with width and height
@@ -72,7 +74,8 @@ public class CombinedButton {
 		double smallWidth = (width-10)/2, smallHeight = (height-10)/2;
 		onButton = new OnOffButton(OnOffButton.ON, x+5, y+5, smallWidth, smallHeight);
 		offButton = new OnOffButton(OnOffButton.OFF, x+5+smallWidth, y+5, smallWidth, smallHeight);
-		ttButton = new TimeTableButton(x+5, y+5+smallHeight, (width-10), (height-10)/2);
+		ttButton = new TimeTableButton(x+5, y+5+smallHeight, smallWidth, smallHeight);
+		logButton = new LogButton(x+5+smallWidth, y+5+smallHeight, smallWidth, smallHeight);
 		this.deviceState = deviceState;
 		if(deviceState) {
 			onButton.setStatus(false);
@@ -133,6 +136,8 @@ public class CombinedButton {
 			return OFF_BUTTON;
 		} else if(ttButton.checkPoint(x, y)) {
 			return TIME_TABLE_BUTTON;
+		} else if(logButton.checkPoint(x, y)) {
+			return LOG_BUTTON;
 		}
 		return -1;
 	}
@@ -168,6 +173,7 @@ public class CombinedButton {
 		onButton.draw(drawer);
 		offButton.draw(drawer);
 		ttButton.draw(drawer);
+		logButton.draw(drawer);
 		if(text!=null && textPlace != null && textColor!=null) {
 			drawer.fill(textColor.getRGB());
 			drawer.textSize((float)textSize);

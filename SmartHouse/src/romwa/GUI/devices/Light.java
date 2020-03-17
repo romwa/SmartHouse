@@ -12,6 +12,7 @@ import romwa.GUI.buttons.TimeTableButton;
 import romwa.system.SystemVariables;
 import romwa.system.control.ArduinoHandler;
 import romwa.system.control.LightControl;
+import romwa.system.control.Log;
 
 public class Light {
 
@@ -27,6 +28,8 @@ public class Light {
 	
 	private int screen;
 	
+	private Log log;
+	
 	public Light(ArduinoHandler arduino) {
 		control = new LightControl(arduino);
 		
@@ -39,14 +42,17 @@ public class Light {
 		timeTable = new TimeTable("Data" + s + "timeTables" + s + "LightTimeTable.txt", "Light Time Table");
 		
 		screen = SystemVariables.MAIN_SCREEN;
+		
+		log = new Log("Data" + s + "log" + s + "LightLog.txt");
 	}
 	
-	public void checkAction(int day, int hour) {
-		if(timeTable.timeTableHour(day, hour)) {
-			turnLightOn();
-		} else {
-			turnLightOff();
+	public int checkAction(int day, int hour) {
+		if(timeTable.timeTableHour(day, hour) && !control.getState()) {
+			return 1;
+		} else if(!timeTable.timeTableHour(day, hour) && control.getState()){
+			return 0;
 		}
+		return -1;
 	}
 	
 	public void draw(PApplet drawer) {
@@ -85,6 +91,8 @@ public class Light {
 				return -1;
 			case SystemVariables.TIME_TABLE_BUTTON:
 				return SystemVariables.TIME_TABLE_BUTTON;
+			case SystemVariables.LOG_BUTTON:
+				return SystemVariables.LOG_BUTTON;
 			}
 		} else if(screen == SystemVariables.TT_LIGHT_SCREEN){
 			if(timeTable.mousePress(x, y)==0) {
@@ -108,5 +116,14 @@ public class Light {
 		control.stop();
 		lightState = false;
 		button.setDeviceState(lightState);
+	}
+
+	public String logFile() {
+		return control.getLog();
+	}
+
+	public void openLog() {
+		// TODO Auto-generated method stub
+		log.openLog();
 	}
 }

@@ -73,6 +73,14 @@ public class Button {
 	}
 	
 	/**
+	 * Sets the text of the button. Will only appear if given coordinates, size and color
+	 * @param text The new text of the button
+	 */
+	public void setText(String text) {
+		this.text = text;
+	}
+	
+	/**
 	 * Sets the fill color of the button
 	 * @param c The new color of the button
 	 * @post PApplet attributes fill = c

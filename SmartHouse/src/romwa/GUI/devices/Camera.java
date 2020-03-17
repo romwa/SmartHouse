@@ -12,6 +12,7 @@ import romwa.GUI.buttons.OnOffButton;
 import romwa.shapes.Rectangle;
 import romwa.system.SystemVariables;
 import romwa.system.control.CameraControl;
+import romwa.system.control.Log;
 
 /**
  * This class represents a "drawable" camera
@@ -38,39 +39,45 @@ public class Camera {
 
 	private int screen;
 
+	private Log log;
+
 	public Camera() {		
 		button = new CombinedButton(cameraState);
 
 		cc = new CameraControl();
-		
+
 		cameraState = cc.getState();
-		
+
 		String s = FileIO.fileSeparator;
 		timeTable = new TimeTable("Data" + s + "timeTables" + s + "CameraTimeTable.txt", "Camera Time Table");
-//		timeTable = new TimeTable("Data" + FileIO.fileSeparator + "CameraTimeTable.txt", "Camera Time Table");
+		//		timeTable = new TimeTable("Data" + FileIO.fileSeparator + "CameraTimeTable.txt", "Camera Time Table");
 		//		timeTable = new boolean[7][24];
 		//		timeTableFile = "Data" + FileIO.fileSeparator + "CameraTimeTable.txt";
 
 		lockSequence = false;
 
 		screen = SystemVariables.MAIN_SCREEN;
-	}
-	
-	public void checkAction(int day, int hour) {
-		if(timeTable.timeTableHour(day, hour) && !cc.getState()) {
-			startCamera();
-		} else if(!timeTable.timeTableHour(day, hour) && cc.getState()){
-			stopCamera();
-		}
+
+		log = new Log("Data" + s + "log" + s + "CameraLog.txt");
+
 	}
 
-//	public void drawButton(PApplet drawer) {
-//		button.draw(drawer);
-//	}
-//
-//	public void drawTimeTable(PApplet drawer) {
-//		timeTable.draw(drawer);
-//	}
+	public int checkAction(int day, int hour) {
+		if(timeTable.timeTableHour(day, hour) && !cc.getState()) {
+			return 1;
+		} else if(!timeTable.timeTableHour(day, hour) && cc.getState()){
+			return 0;
+		}
+		return -1;
+	}
+
+	//	public void drawButton(PApplet drawer) {
+	//		button.draw(drawer);
+	//	}
+	//
+	//	public void drawTimeTable(PApplet drawer) {
+	//		timeTable.draw(drawer);
+	//	}
 
 	public void draw(PApplet drawer) {
 		switch(screen) {
@@ -131,13 +138,13 @@ public class Camera {
 			int buttonPressed = button.mousePress(x, y);
 			switch (buttonPressed) {
 			case SystemVariables.ON_BUTTON:
-				startCamera();
-				return -1;
+				return 1;
 			case SystemVariables.OFF_BUTTON:
-				stopCamera();
-				return -1;
+				return 0;
 			case SystemVariables.TIME_TABLE_BUTTON:
 				return SystemVariables.TIME_TABLE_BUTTON;
+			case SystemVariables.LOG_BUTTON:
+				return SystemVariables.LOG_BUTTON;
 			}
 		} else if(screen == SystemVariables.TT_CAMERA_SCREEN){
 			if(timeTable.mousePress(x, y)==0) {
@@ -147,16 +154,25 @@ public class Camera {
 		return -1;
 	}
 
-	private void startCamera() {
+	public void startCamera() {
 		cc.start();
 		cameraState = true;
 		button.setDeviceState(true);
 	}
 
-	private void stopCamera() {
+	public void stopCamera() {
 		cc.stop();
 		cameraState = false;
 		button.setDeviceState(false);
+	}
+
+	public String logFile() {
+		return cc.getLog();
+	}
+
+	public void openLog() {
+		// TODO Auto-generated method stub
+		log.openLog();
 	}
 
 	//	public TimeTableButton timeTableButton() {

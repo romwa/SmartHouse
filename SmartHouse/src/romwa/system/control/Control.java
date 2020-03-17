@@ -9,15 +9,16 @@ import romwa.FileIO.FileIO;
 
 public abstract class Control {
 	
-	protected String logFile;
+	protected Log log;
 	protected String stateFile;
+	
 	
 	public Control() {
 		
 	}
 	
 	public Control(String logFile, String stateFile) {
-		this.logFile = logFile;
+		this.log = new Log(logFile);
 		this.stateFile = stateFile;
 	}
 	
@@ -27,16 +28,12 @@ public abstract class Control {
 	
 	protected void logStart() {
 		Date d = new Date();
-		ArrayList<String> newLog = FileIO.readFile(logFile);
-		newLog.add("START, " + d.toString());
-		FileIO.writeFile(logFile, newLog);
+		log.write("START, " + d.toString());
 	}
 	
 	protected void logStop() {
 		Date d = new Date();
-		ArrayList<String> newLog = FileIO.readFile(logFile);
-		newLog.add("STOP, " + d.toString());
-		FileIO.writeFile(logFile, newLog);
+		log.write("STOP, " + d.toString());
 	}
 	
 	/**
@@ -57,5 +54,13 @@ public abstract class Control {
 	
 	public boolean getState() {
 		return FileIO.readLine(stateFile).equals("true");
+	}
+	
+	public String getLog() {
+		return log.read();
+	}
+	
+	public void openLog() {
+		log.openLog();
 	}
 }

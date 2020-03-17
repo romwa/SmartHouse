@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.util.Date;
 
 import javax.swing.JFrame;
+import javax.swing.JTextArea;
 
 import processing.awt.PSurfaceAWT;
 import processing.core.PApplet;
@@ -19,8 +20,8 @@ public class Main {
 		PSurfaceAWT.SmoothCanvas canvas = (PSurfaceAWT.SmoothCanvas) surf.getNative();
 		JFrame window = (JFrame)canvas.getFrame();
 
-		window.move(100, 100);
-		window.setSize(800, 600);
+		window.move(50, 50);
+		window.setSize(1000, 900);
 		window.setMinimumSize(new Dimension(100,100));
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(true);
@@ -28,3 +29,4 @@ public class Main {
 	}
 	
 }
+
