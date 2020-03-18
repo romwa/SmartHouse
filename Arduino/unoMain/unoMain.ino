@@ -1,12 +1,24 @@
 //code for the main arduino
+#include "nrf_24l01.h";
 
+//things for radio comunication
+byte addr[5] = {0x00,0x00,0x00,0x00,0x01};
+byte lightAddr[5] = {0x00,0x00,0x00,0x00,0x02};
+byte lockAddr[5] = {0x00,0x00,0x00,0x00,0x03};
+char dat[] = {0, 'd', 'd'};
+char datin[] = {0,'d','d'};
+//transmitter / reciever
+byte currentState;
+byte pipe=0;
 
+char CHECK = '0';
 char LIGHT_ON='n';
 char LIGHT_OFF='f';
 char LOCK='l';
 char UNLOCK='u';
 char CONFIRM='c';
 char IDLE_STATE = 'd';
+char ERROR_MESSAGE = 'e';
 char command = IDLE_STATE;
 
 //things until miniLight works
@@ -16,16 +28,59 @@ char command = IDLE_STATE;
 //A5 & A4
 
 void setup() {
-  // put your setup code here, to run once:
+  //starts as a transmittor
+  currentState = 1;
   Serial.begin(9600);
-  setMiniLight();
-  setMiniLock();
+
+  RF.begin();
+// not must default 2  
+//  RF.setChannel (18);
+
+
+// not must
+// only to change channel  and/or address
+  RF.setTXaddr (1,lightAddr);
+  RF.setRXaddr (1,addr);
+
+  
+  if (!currentState)
+    RF.setRX();
+  else
+    RF.setTX();
+    
+  //device need 1.5 ms to reach standby mode (CE=low)
+  delay(100);
+  
+//  setMiniLight();
+//  setMiniLock();
 }
 
+byte i,j;
+
 void loop() {
-  // put your main code here, to run repeatedly:
-//  std::string commandStr = readFromComputer();
-//  int command = std::stoi(commandStr);
+   byte bufferin,bufferout;
+
+   if(currentState && command != IDLE_STATE) {
+      bufferout = dat;
+      RF.send(&bufferout);
+      if(dat[i]) i++;
+      else {
+        delay(50);
+      }
+   } else {
+      if(RF.readReady(&pipe)) {
+          RF.read(&bufferin);
+          if(datin[j]) j++;
+          else {
+            j-0;
+            for (i=0;dat[i];i++)
+            Serial.write (dat[i]);
+            Serial.println("");
+            delay(50);
+          }
+      }
+   }
+  
   if(command != CONFIRM) {
     String commandStr = readFromComputer();
     command = commandStr.charAt(0);
